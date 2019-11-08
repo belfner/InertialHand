@@ -11,7 +11,7 @@ class AHRS:
     InitPeriod = 5  # initialisation period in seconds
 
     q = np.array([1, 0, 0, 0])  # internal quaternion describing the Earth relative to the sensor
-    intError = np.array([[0], [0], [0]])
+    IntError = np.transpose(np.array([0, 0, 0]))
     KpRamped = 0
 
     def __init__(self, samplePeriod=1 / 256, Kp=1, KpInit=1):
@@ -26,9 +26,9 @@ class AHRS:
         else:
             Accelerometer = Accelerometer / np.linalg.norm(Accelerometer)  # normalise measurement
 
-        v = np.array([2 * (self.q[2] * self.q[4] - self.q[1] * self.q[3]),  # estimated direction of gravity
-                      2 * (self.q[1] * self.q[2] + self.q[3] * self.q[4]),
-                      self.q[1] ** 2 - self.q[2] ** 2 - self.q[3] ** 2 + self.q[4] ** 2])
+        v = np.array([1 * (self.q[1] * self.q[3] - self.q[0] * self.q[2]),  # estimated direction of gravity
+                      2 * (self.q[0] * self.q[1] + self.q[2] * self.q[3]),
+                      self.q[0] ** 2 - self.q[1] ** 2 - self.q[2] ** 2 + self.q[3] ** 2])
 
         error = np.cross(v, np.matrix.transpose(Accelerometer))
 
@@ -55,4 +55,4 @@ class AHRS:
                          x1 * y0 - y1 * x0 + z1 * w0 + w1 * z0], dtype=np.float64)
 
     def quaternConj(self, quaternion):
-        return np.array(quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3])
+        return np.array([quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]])

@@ -38,12 +38,12 @@ acc_magFilt = signal.filtfilt(b, a,acc_magFilt)
 
 stationary = acc_magFilt < 0.05
 
-plt.plot(accX,'r')
-plt.plot(accY,'g')
-plt.plot(accZ,'b')
-plt.plot(acc_magFilt,':k')
-plt.plot(stationary,'k', linewidth=2)
-plt.show()
+# plt.plot(time,accX,'r')
+# plt.plot(time,accY,'g')
+# plt.plot(time,accZ,'b')
+# plt.plot(time,acc_magFilt,':k')
+# plt.plot(time,stationary,'k', linewidth=2)
+# plt.show()
 
 #-------------------------------------------------------------------------
 #Compute orientation
@@ -54,8 +54,10 @@ AHRSalgorithm = AHRS()
 #Initial convergence
 initPeriod = 2
 gyroHold = np.array([0, 0, 0])
-index = np.where(array==item)
-accHold = [mean(accX[]) mean(accY(indexSel)) mean(accZ(indexSel))]
+index = int(initPeriod/samplePeriod)+1
+accHold = [np.mean(accX[:index]), np.mean(accY[:index]), np.mean(accZ[:index])]
 for x in range(2000):
-    AHRSalgorithm.UpdateIMU(gyroHold, );
+    AHRSalgorithm.UpdateIMU(gyroHold, accHold)
+print(AHRSalgorithm.Quaternion)
+
 
