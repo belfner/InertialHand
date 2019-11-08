@@ -89,7 +89,7 @@ ax(2) = subplot(2,1,2);
     plot(time, accX, 'r');
     plot(time, accY, 'g');
     plot(time, accZ, 'b');
-    plot(time, acc_magFilt, ':k');
+    plot(time, acc_magFilt, ':k');  
     plot(time, stationary, 'k', 'LineWidth', 2);
     title('Accelerometer');
     xlabel('Time (s)');
