@@ -39,12 +39,11 @@ class AHRS:
         Ref = np.insert(Ref, 0, 0)
 
         # Compute rate of change of quaternion
-        pDot = self.quaternion_multiply(self.q, Ref)
+        pDot = 0.5 * self.quaternion_multiply(self.q, Ref)
         self.q = self.q + pDot * self.SamplePeriod  # integrate rate of change of quaternion
         self.q = self.q / np.linalg.norm(self.q)
-        self.Quaternion = self.quaternConj(self.q);
-
-
+        self.Quaternion = self.quaternConj(self.q)
+        f = 1
 
     def quaternion_multiply(self, quaternion1, quaternion0):
         w0, x0, y0, z0 = quaternion0
@@ -56,3 +55,4 @@ class AHRS:
 
     def quaternConj(self, quaternion):
         return np.array([quaternion[0], -quaternion[1], -quaternion[2], -quaternion[3]])
+
