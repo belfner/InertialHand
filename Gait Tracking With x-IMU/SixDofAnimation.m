@@ -94,17 +94,17 @@ function fig = SixDOFanimation(varargin)
     elseif(~isempty(Position))
         set(fig, 'Position', Position);
     end
-    set(gca, 'drawmode', 'fast');
-    lighting phong;
-    set(gcf, 'Renderer', 'zbuffer');
-    hold on;
-    axis equal;
-    grid on;
-    view(View(1, 1), View(1, 2));
-    title(i);
-    xlabel(Xlabel);
-    ylabel(Ylabel);
-    zlabel(Zlabel);
+        set(gca, 'drawmode', 'fast');
+        lighting phong;
+        set(gcf, 'Renderer', 'zbuffer');
+        hold on;
+        axis equal;
+        grid on;
+        view(View(1, 1), View(1, 2));
+        title(i);
+        xlabel(Xlabel);
+        ylabel(Ylabel);
+        zlabel(Zlabel);
 
     % Create plot data arrays
     if(strcmp(Trail, 'DotsOnly') || strcmp(Trail, 'All'))

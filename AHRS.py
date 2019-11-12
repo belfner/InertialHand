@@ -26,16 +26,16 @@ class AHRS:
         else:
             Accelerometer = Accelerometer / np.linalg.norm(Accelerometer)  # normalise measurement
 
-        v = np.array([1 * (self.q[1] * self.q[3] - self.q[0] * self.q[2]),  # estimated direction of gravity
+        v = np.array([2 * (self.q[1] * self.q[3] - self.q[0] * self.q[2]),  # estimated direction of gravity
                       2 * (self.q[0] * self.q[1] + self.q[2] * self.q[3]),
                       self.q[0] ** 2 - self.q[1] ** 2 - self.q[2] ** 2 + self.q[3] ** 2])
 
-        error = np.cross(v, np.matrix.transpose(Accelerometer))
+        error = np.cross(v, Accelerometer)
 
         self.IntError = self.IntError + error  # compute integral feedback terms (only outside of init period)
 
         # Apply feedback terms
-        Ref = Gyroscope - np.matrix.transpose((self.Kp * error + self.Ki * self.IntError))
+        Ref = Gyroscope - (self.Kp * error + self.Ki * self.IntError)
         Ref = np.insert(Ref, 0, 0)
 
         # Compute rate of change of quaternion
@@ -43,7 +43,8 @@ class AHRS:
         self.q = self.q + pDot * self.SamplePeriod  # integrate rate of change of quaternion
         self.q = self.q / np.linalg.norm(self.q)
         self.Quaternion = self.quaternConj(self.q)
-        f = 1
+
+        return self.Quaternion
 
     def quaternion_multiply(self, quaternion1, quaternion0):
         w0, x0, y0, z0 = quaternion0

@@ -160,6 +160,17 @@ for t = 2:length(vel)
     end
 end
 
+% Plot translational velocity
+figure('Position', [9 39 900 300], 'NumberTitle', 'off', 'Name', 'Old Velocity');
+hold on;
+plot(time, vel(:,1), 'r');
+plot(time, vel(:,2), 'g');
+plot(time, vel(:,3), 'b');
+title('Velocity');
+xlabel('Time (s)');
+ylabel('Velocity (m/s)');
+legend('X', 'Y', 'Z');
+hold off;
 
 % Compute integral drift during non-stationary periods
 velDrift = zeros(size(vel));
@@ -176,7 +187,7 @@ end
 vel = vel - velDrift;
 
 % Plot translational velocity
-figure('Position', [9 39 900 300], 'NumberTitle', 'off', 'Name', 'Velocity');
+figure('Position', [9 39 900 300], 'NumberTitle', 'off', 'Name', 'NewVelocity');
 hold on;
 plot(time, vel(:,1), 'r');
 plot(time, vel(:,2), 'g');

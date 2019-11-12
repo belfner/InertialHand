@@ -72,7 +72,6 @@ classdef AHRS < handle
 
             % Store conjugate
             obj.Quaternion = obj.quaternConj(obj.q);
-            b = 1
         end
         function obj = Reset(obj)
             obj.KpRamped = obj.KpInit;      % start Kp ramp-down
