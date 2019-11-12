@@ -4,17 +4,19 @@ from AHRS import AHRS
 import HelperFunctions
 from matplotlib import pyplot as plt
 import numpy as np
+from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d.axes3d import Axes3D
+from scipy.spatial.transform import Rotation as R
 import mpl_toolkits.mplot3d.axes3d as p3
 from matplotlib import animation
 
-samplePeriod = 1 / 256
+samplePeriod = 1/256
 
-startTime = int(6 / samplePeriod)
+startTime = int(6/ samplePeriod)
 stopTime = int(26 / samplePeriod)
 
 dfo = pd.read_csv('straightLine_CalInertialAndMag.csv', index_col=False)
-# print(dfo.columns)
+# # print(dfo.columns)
 df = dfo.iloc[startTime:stopTime + 1]
 time = np.array([(x + startTime) / 256 for x in range(len(df))])
 gyrX = df['Gyroscope X (deg/s)'].values
@@ -23,6 +25,15 @@ gyrZ = df['Gyroscope Z (deg/s)'].values
 accX = df['Accelerometer X (g)'].values
 accY = df['Accelerometer Y (g)'].values
 accZ = df['Accelerometer Z (g)'].values
+# time = df['Seconds'].values
+# gyrX = df['GyroX'].values
+# gyrY = df['GyroY'].values
+# gyrZ = df['GyroZ'].values
+# accX = df['AccX'].values
+# accY = df['AccY'].values
+# accZ = df['AccZ'].values
+
+
 
 acc_mag = np.sqrt(np.multiply(accX, accX) + np.multiply(accY, accY) + np.multiply(accZ, accZ))
 
@@ -39,14 +50,14 @@ filtCutOff = 5
 b, a = signal.butter(1, (2 * filtCutOff) / (1 / samplePeriod), 'low')
 acc_magFilt = signal.filtfilt(b, a, acc_magFilt)
 
-stationary = acc_magFilt < 0.05
+stationary = acc_magFilt < 0.10
 
-# plt.plot(time,accX,'r')
-# plt.plot(time,accY,'g')
-# plt.plot(time,accZ,'b')
-# plt.plot(time,acc_magFilt,':k')
+plt.plot(time,accX,'r',linewidth=.5)
+plt.plot(time,accY,'g',linewidth=.5)
+plt.plot(time,accZ,'b',linewidth=.5)
+plt.plot(time,acc_magFilt,':k',linewidth=.5)
 # plt.plot(time,stationary,'k', linewidth=2)
-# plt.show()
+plt.show()
 
 # -------------------------------------------------------------------------
 # Compute orientation
@@ -58,6 +69,7 @@ AHRSalgorithm = AHRS()
 initPeriod = 2
 gyroHold = np.array([0, 0, 0])
 index = int(initPeriod / samplePeriod) + 1
+index = 8
 accHold = [np.mean(accX[:index]), np.mean(accY[:index]), np.mean(accZ[:index])]
 for x in range(2000):
     AHRSalgorithm.UpdateIMU(gyroHold, accHold)
@@ -88,11 +100,11 @@ plt.plot(time, acc[0], 'r', linewidth=.5)
 plt.plot(time, acc[1], 'g', linewidth=.5)
 plt.plot(time, acc[2], 'b', linewidth=.5)
 plt.xlim([time[0], time[-1]])
-plt.xticks(np.arange(time[0], time[-1] + .45, .5))
+plt.xticks(np.arange(time[0], time[-1] + .45, 5))
 plt.legend(['X', 'Y', 'Z'])
 plt.xlabel('Time (s)')
 plt.ylabel('Acceleration (m/s/s)')
-# plt.show()
+plt.show()
 
 # -------------------------------------------------------------------------
 # Compute translational velocities
@@ -127,11 +139,11 @@ plt.plot(time, vel[0], 'r', linewidth=.5)
 plt.plot(time, vel[1], 'g', linewidth=.5)
 plt.plot(time, vel[2], 'b', linewidth=.5)
 plt.xlim([time[0], time[-1]])
-plt.xticks(np.arange(time[0], time[-1] + .45, .5))
+plt.xticks(np.arange(time[0], time[-1] + .45, 5))
 plt.legend(['X', 'Y', 'Z'])
 plt.xlabel('Time (s)')
 plt.ylabel('Velocity (m/s)')
-# plt.show()
+plt.show()
 
 # -------------------------------------------------------------------------
 # Compute translational position
@@ -149,30 +161,82 @@ plt.plot(time, pos[0], 'r', linewidth=.5)
 plt.plot(time, pos[1], 'g', linewidth=.5)
 plt.plot(time, pos[2], 'b', linewidth=.5)
 plt.xlim([time[0], time[-1]])
-plt.xticks(np.arange(time[0], time[-1] + .45, .5))
+plt.xticks(np.arange(time[0], time[-1] + .45, 5))
 plt.legend(['X', 'Y', 'Z'])
 plt.xlabel('Time (s)')
 plt.ylabel('Position (m)')
-# plt.show()
+plt.show()
 
 fig = plt.figure()
 ax = plt.axes(projection='3d')
-ax.plot3D(pos[0], pos[1], pos[2], 'gray')
 
-x_scale=20
-y_scale=1
-z_scale=1
+# ax = fig.gca(projection='3d')
+# ax.set_aspect('equal')
+# ax.plot(pos[0],pos[1],pos[2])
+# plt.show()
 
-scale=np.diag([x_scale, y_scale, z_scale, 1.0])
-scale=scale*(1.0/scale.max())
-scale[3,3]=1.0
+# plt.figure()
+# fig, ax = plt.subplots(subplot_kw=dict(projection="3d"))
+# plt.ion()
+#
+# def generate_data(num):
+#     return R.from_quat(quat[num]).as_dcm()
+#
+# r = generate_data(0)
+#
+# quiverx = ax.quiver(0, 0, 0, r[0][0], r[0][1], r[0][2], pivot="tail", color="red")
+# quivery = ax.quiver(0, 0, 0, r[1][0], r[1][1], r[1][2], pivot="tail", color="green")
+# quiverz = ax.quiver(0, 0, 0, r[2][0], r[2][1], r[2][2], pivot="tail", color="blue")
+#
+# ax.set_xlim(-1, 1)
+# ax.set_ylim(-1, 1)
+# ax.set_zlim(-1, 1)
+#
+#
+#
+# for i in range(2000,quat.shape[0],10):
+#     # global quiverx
+#     # global quivery
+#     # global quiverz
+#     quiverx.remove()
+#     quivery.remove()
+#     quiverz.remove()
+#     r = generate_data(i)
+#     quiverx = ax.quiver(0, 0, 0, r[0][0], r[0][1], r[0][2], pivot="tail", color="red")
+#     quivery = ax.quiver(0, 0, 0, r[1][0], r[1][1], r[1][2], pivot="tail", color="green")
+#     quiverz = ax.quiver(0, 0, 0, r[2][0], r[2][1], r[2][2], pivot="tail", color="blue")
+#     plt.draw()
+#     plt.pause(0.1)
+#
+# plt.show(block=True)
 
-def short_proj():
-  return np.dot(Axes3D.get_proj(ax), scale)
+# r = generate_data(0)
+#
+#
+# quiverx = ax.quiver(0, 0, 0, r[0][0], r[0][1], r[0][2], pivot="tail", color="red")
+# quivery = ax.quiver(0, 0, 0, r[1][0], r[1][1], r[1][2], pivot="tail", color="green")
+# quiverz = ax.quiver(0, 0, 0, r[2][0], r[2][1], r[2][2], pivot="tail", color="blue")
+#
+# ax.set_xlim(-1, 1)
+# ax.set_ylim(-1, 1)
+# ax.set_zlim(-1, 1)
+#
+# def update(num):
+#     global quiverx
+#     global quivery
+#     global quiverz
+#     quiverx.remove()
+#     quivery.remove()
+#     quiverz.remove()
+#     r = generate_data(num)
+#     quiverx = ax.quiver(0, 0, 0, r[0][0], r[0][1], r[0][2], pivot="tail", color="red")
+#     quivery = ax.quiver(0, 0, 0, r[1][0], r[1][1], r[1][2], pivot="tail", color="green")
+#     quiverz = ax.quiver(0, 0, 0, r[2][0], r[2][1], r[2][2], pivot="tail", color="blue")
+#
+#
+# ani = animation.FuncAnimation(fig, update, frames=range(2000,quat.shape[0]), interval=100)
+# plt.show()
 
-ax.get_proj=short_proj
-
-plt.show()
 # fig = plt.figure()
 # ax = p3.Axes3D(fig)
 #

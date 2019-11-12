@@ -22,7 +22,7 @@ class AHRS:
     def UpdateIMU(self, Gyroscope, Accelerometer):
         if (np.linalg.norm(Accelerometer) == 0):  # handle NaN
             warnings.warn('Accelerometer magnitude is zero.  Algorithm update aborted.')
-            return
+            return self.Quaternion
         else:
             Accelerometer = Accelerometer / np.linalg.norm(Accelerometer)  # normalise measurement
 
